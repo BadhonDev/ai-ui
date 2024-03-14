@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import UploadModal from "./upload-modal"
+import AddURLModal from "./add-url-modal"
 import { useSidebarState } from "@/hooks/use-sidebar-state"
 import { getHistoryData } from "@/actions/get-history-data"
 
@@ -40,7 +41,7 @@ const Sidebar = () => {
   const deleteHistoryById = async (session_id) => {
     try {
       setDeleteLoading(true)
-      setSelectedHistoryId(session_id)
+      // setSelectedHistoryId(session_id)
       const response = await fetch(`${url}/delete_session`, {
         method: "POST",
         headers: {
@@ -55,6 +56,7 @@ const Sidebar = () => {
     } catch (error) {
       alert(error)
     } finally {
+      // historyFetchById(selectedHistoryId, selectedUserId)
       setDeleteLoading(false)
     }
   }
@@ -188,7 +190,7 @@ const Sidebar = () => {
                       />
                     </svg>
                   </span>
-                  Chat
+                  Add URL
                 </div> */}
                 <button
                   type="button"
@@ -214,7 +216,11 @@ const Sidebar = () => {
                   </span>
                   Upload
                 </button>
-                {/* <div className="flex items-center">
+                <button
+                  type="button"
+                  className="flex items-center cursor-pointer disabled:pointer-events-none"
+                  data-hs-overlay="#hs-vertically-centered-modal-url"
+                >
                   <span className="pe-2">
                     <svg
                       width="19"
@@ -239,8 +245,8 @@ const Sidebar = () => {
                       />
                     </svg>
                   </span>
-                  Settings
-                </div> */}
+                  Add URL
+                </button>
               </div>
               <div className="pt-10 pb-8 ps-4 text-white">
                 <p>@ EBIW | All right reserved</p>
@@ -288,6 +294,7 @@ const Sidebar = () => {
         </button>
       </div>
       <UploadModal />
+      <AddURLModal />
     </div>
   )
 }
