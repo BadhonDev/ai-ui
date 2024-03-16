@@ -1,49 +1,45 @@
 "use client"
+import React, { useState } from 'react';
 
 // import Image from "next/image"
 // import { useState } from "react"
 // import { uploadFiles } from "@/actions/file-upload"
 
 const AddURLModal = () => {
-  // const [selectedFiles, setSelectedFiles] = useState([])
-  // const [isLoading, setIsLoading] = useState(false)
-  // const [uploadSuccessful, setUploadSuccessful] = useState(false)
+  
+  const [url, setUrl] = useState('');
+  const [crawlStared, setCrawlStared] = useState(false); 
+  const backend_url = process.env.NEXT_PUBLIC_BASE_URL
+  const handleUrlChange = (e) => {
+    setUrl(e.target.value);
+  };
+  const handleOk = () => {
+    setCrawlStared(false); // Reset the state
+  };
 
-  // const handleFileChange = (e) => {
-  //   const newFiles = e.target.files
+  const handleAddClick = async () => {
+    try {
+      const response = await fetch(`${backend_url}/start-crawl`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+      if (response.ok) {
+        console.log('Crawl started successfully');
+        setCrawlStared(true)
 
-  //   if (newFiles) {
-  //     const filesArray = Array.from(newFiles)
-  //     setSelectedFiles((prevSelectedFiles) => [
-  //       ...prevSelectedFiles,
-  //       ...filesArray,
-  //     ])
-  //   }
-  // }
+      } else {
+        console.error('Failed to start crawl:', await response.text());
+        // Additional error handling (e.g., show error message)
+      }
+    } catch (error) {
+      console.error('Error starting crawl:', error);
+      // Additional error handling (e.g., show error message)
+    }
+  };
 
-  // const removeFile = (file) => {
-  //   setSelectedFiles((prevSelectedFiles) =>
-  //     prevSelectedFiles.filter((f) => f !== file)
-  //   )
-  // }
-
-  // const onUploadClick = async () => {
-  //   if (!selectedFiles) return
-  //   setIsLoading(true)
-  //   try {
-  //     await uploadFiles(selectedFiles)
-  //     setUploadSuccessful(true)
-  //   } catch (e) {
-  //     alert(e)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // const handleOk = () => {
-  //   setSelectedFiles([])
-  //   setUploadSuccessful(false)
-  // }
   return (
     <div
       id="hs-vertically-centered-modal-url"
@@ -76,34 +72,52 @@ const AddURLModal = () => {
               </svg>
             </button>
           </div>
-          <div className="p-4 overflow-y-auto">
-            <input
-              type="email"
-              id="input-label"
-              className="py-3 px-4 block w-full border-2 border-gray-800 rounded-lg text-sm"
-              placeholder="Add URL here"
-              autoFocus
-            />
-          </div>
-          <div className="flex justify-end items-center gap-x-2 py-3 px-4">
-            <button
-              type="button"
-              className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-              data-hs-overlay="#hs-vertically-centered-modal-url"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-            >
-              Add
-            </button>
-          </div>
+          {crawlStared ? (
+            <div className="flex flex-col items-center justify-center gap-5 p-4">
+              {/* Success message and OK button */}
+              <div className="font-bold text-xl">URL added successfully!</div>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                onClick={handleOk}
+              >
+                OK
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="p-4 overflow-y-auto">
+                <input
+                  type="text"
+                  className="py-3 px-4 block w-full border-2 border-gray-800 rounded-lg text-sm"
+                  placeholder="Add URL here"
+                  value={url}
+                  onChange={handleUrlChange}
+                  autoFocus
+                />
+              </div>
+              <div className="flex justify-end items-center gap-x-2 py-3 px-4">
+                <button
+                  type="button"
+                  className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:bg-slate-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                  data-hs-overlay="#hs-vertically-centered-modal-url"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                  onClick={handleAddClick}
+                >
+                  Add
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
 
 export default AddURLModal
